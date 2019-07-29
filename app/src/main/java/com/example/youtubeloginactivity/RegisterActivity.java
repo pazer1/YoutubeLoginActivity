@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -50,23 +51,30 @@ public class RegisterActivity extends AppCompatActivity {
                 userAge = idText.getText().toString();
                 userName = idText.getText().toString();
 
-                updateUserInfo();
+                try {
+                    updateUserInfo();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
-    private void updateUserInfo(){
-        String url = "";
+    private void updateUserInfo() throws IOException {
+        String url = "http://dipdoo.dothome.co.kr/LoginTest/Register.php";
         OkHttpClient client = new OkHttpClient();
 
+
+
         RequestBody formBody = new FormBody.Builder()
-                .add("userId",userId)
+                .add("userID",userId)
                 .add("userPassword",userPassword)
                 .add("userAge",userAge)
                 .add("userName",userName)
                 .build();
 
         Request request = new Request.Builder()
+                .addHeader("content_length",String.valueOf(formBody.contentLength()))
                 .url(url)
                 .post(formBody)
                 .build();
@@ -82,12 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         @Override
         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
-            try {
-                JSONObject jsonObject = new JSONObject(response.body().toString());
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            Log.d("response",response.body().string());
         }
     };
 }
